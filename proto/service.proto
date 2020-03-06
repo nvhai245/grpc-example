@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/api/annotations.proto";
+
+message User {
+	string id = 1;
+	string name = 2;
+}
+
+message Message {
+	string id = 1;
+	string content = 2;
+	string timestamp = 3;
+}
+
+message Connect {
+	User user = 1;
+	bool active = 2;
+}
+
+message Close{}
+
+service Broadcast {
+	rpc CreateStream (Connect) returns (stream Message) {
+		option (google.api.http) = {
+		  post: "/chat"
+		  body: "*"
+		};
+	};
+	rpc BroadcastMessage (Message) returns (Close);
+}
+
+// gRPC-Web
+message EchoRequest {
+	string message = 1;
+}
+  
+message EchoResponse {
+	string message = 1;
+}
+  
+service EchoService {
+	rpc Echo(EchoRequest) returns (EchoResponse);
+}
